@@ -3,8 +3,9 @@
 CREATE TABLE coins (
     id SERIAL PRIMARY KEY,
     balance INT,
-    userFK INT REFERENCES users (id) -- TODO: to user_id
+    userFK INT REFERENCES users (id)
 );
+INSERT INTO coins (id, balance, userFK) VALUES (1, 583279, 1);
 -- +goose StatementEnd
 
 -- +goose Down

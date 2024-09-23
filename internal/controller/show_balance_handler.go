@@ -15,3 +15,5 @@ func (c *controller) ShowBalance(w http.ResponseWriter, r *http.Request) {
 	response := fmt.Sprintf("Your balance. Gold: %d, Silver: %d, Bronze: %d", b.Gold, b.Silver, b.Bronze)
 	w.Write([]byte(response))
 }
+
+// TODO InsertBalance

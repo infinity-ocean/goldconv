@@ -17,11 +17,10 @@ func main() {
 	repo := repo.NewRepo(pool)
 	svc := service.NewService(repo)
 	ctrl := controller.NewController(svc)
-	
+
 	http.HandleFunc("GET /show-balance/", ctrl.ShowBalance)
-
-	http.ListenAndServe(":8080", nil)
-
-	fmt.Println(http.ListenAndServe(":8080", nil))
-	// handlers registration
+	err = http.ListenAndServe("localhost:8080", nil)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
