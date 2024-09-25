@@ -4,34 +4,36 @@ import (
 	"context"
 	"fmt"
 
-	sq "github.com/Masterminds/squirrel"
+	// sq "github.com/Masterminds/squirrel"
 	"github.com/infinity-ocean/goldconv/internal/model"
 )
 
 func (r *repo) SelectBalance(id int) (model.Balance, error) {
 	conn, err := r.pool.Acquire(context.Background()) // 1
 	if err != nil {
-		fmt.Println("Pool didn't return connection")
+		return model.Balance{}, fmt.Errorf("failed to acquire connection from pool: %w", err)
 	}
 	defer conn.Release()
-	selectBalance := sq.Select("balance").From("coins").Where(sq.Eq{"userFK": id})
-	sql, _, err := selectBalance.ToSql()
-	if err != nil {
-		fmt.Println("Squirell failed to make a string for select_balance:", err)
-	}
-	row := conn.QueryRow(context.Background(), sql)
-	if err != nil {
-		fmt.Println("pgxpool failed to execute an expression:", err)
-	}
+	// TODO Добавить squirell (забумбенить сэнди)
+	// builder := sq.Select("balance").From("coins") .Join("users USING (userFK)") 
+	// builder.Where(sq.Eq{"userFK": id})
+	// sql, args, err := builder.ToSql()
+	// if err != nil {
+	// 	return model.Balance{}, fmt.Errorf("failed to build SQL query: %w", err)
+	// }
+	sql := fmt.Sprintf("SELECT balance FROM coins WHERE userFK = %d", id)
+	
+	row := conn.QueryRow(context.Background(), sql) // args
 	balanceScan := coins{} 
-	err = row.Scan(&balanceScan) // 2
+	err = row.Scan(&balanceScan.balance) // 2
 	if err != nil {
-		fmt.Println("Failed to scan pgx result from select:", err)
+		return model.Balance{}, fmt.Errorf("failed to scan result: %w", err)
 	}
 	balanceInt := balanceScan.balance
 	var balance model.Balance // 3
+	// TODO система работает неверно
 	balance.Gold = balanceInt / 100
-	balance.Silver = uint8((balanceInt % 100) / 10)
+	balance.Silver = uint8((balanceInt % 100) / 10) * 10
 	balance.Bronze = uint8(balanceInt % 100)
 	return balance, nil
 }
