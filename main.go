@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+
 	"github.com/infinity-ocean/goldconv/internal/controller"
 	"github.com/infinity-ocean/goldconv/internal/repo"
 	"github.com/infinity-ocean/goldconv/internal/service"
@@ -17,12 +17,7 @@ func main() {
 	}
 	repo := repo.NewRepo(pool)
 	svc := service.NewService(repo)
-	ctrl := controller.NewController(svc)
+	ctrl := controller.NewController(svc, ":9090")
 
-	http.HandleFunc("/goldconv/show-balance", ctrl.ShowBalance)
-	err = http.ListenAndServe("localhost:9090", nil)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	ctrl.Run()
 }

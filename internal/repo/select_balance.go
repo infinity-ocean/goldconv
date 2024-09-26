@@ -9,7 +9,7 @@ import (
 )
 
 func (r *repo) SelectBalance(id int) (model.Balance, error) {
-	conn, err := r.pool.Acquire(context.Background()) // 1
+	conn, err := r.pool.Acquire(context.Background()) // 1 select -> rows
 	if err != nil {
 		return model.Balance{}, fmt.Errorf("failed to acquire connection from pool: %w", err)
 	}
@@ -25,15 +25,14 @@ func (r *repo) SelectBalance(id int) (model.Balance, error) {
 	
 	row := conn.QueryRow(context.Background(), sql) // args
 	balanceScan := coins{} 
-	err = row.Scan(&balanceScan.balance) // 2
+	err = row.Scan(&balanceScan.balance) // 2 rows -> balanceInt
 	if err != nil {
 		return model.Balance{}, fmt.Errorf("failed to scan result: %w", err)
 	}
+	var balance model.Balance // 3 balanceInt -> balance{g,s,b}
 	balanceInt := balanceScan.balance
-	var balance model.Balance // 3
-	// TODO система работает неверно
-	balance.Gold = balanceInt / 100
-	balance.Silver = uint8((balanceInt % 100) / 10) * 10
+	balance.Gold = balanceInt / 10000
+	balance.Silver = uint8((balanceInt % 10000) / 100) 
 	balance.Bronze = uint8(balanceInt % 100)
 	return balance, nil
 }
