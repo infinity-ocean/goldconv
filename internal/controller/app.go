@@ -16,7 +16,8 @@ type controller struct {
 }
 
 type service interface {
-	GetBalance(id int) (model.Balance, error)
+	GetBalance(int) (model.Balance, error)
+	AddBalance(int, model.Balance) error
 }
 
 func NewController(svc service, port string) *controller {
@@ -30,7 +31,7 @@ func WriteJSONtoHTTP(w http.ResponseWriter, status int, v any) error { // вро
 
 func (c *controller) handleBalance(w http.ResponseWriter, r *http.Request) error {
 	if r.Method == "POST" {
-		return nil
+		return c.AddBalance(w, r)
 	}
 	if r.Method == "GET" {
 		return c.ShowBalance(w, r)

@@ -10,7 +10,7 @@ INSERT INTO users (id, name) VALUES
 (3, 'Matthew Bellamy'),
 (4, 'Erenor Guardian'),
 (5, 'Crimson Faction'),
-(6, 'Dawn\'s Light'),
+(6, 'Dawns Light'),
 (7, 'Moonlight Armoire'),
 (8, 'Windswept Warden'),
 (9, 'Shadowfang Talon'),

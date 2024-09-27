@@ -25,9 +25,10 @@ migration:
 
 migration-up:
 	$(LOCAL_BIN)/goose $(opts) -allow-missing -dir $(MIGRATIONS_DIR) postgres "$(POSTGRES_DSN)" up
-
 migration-down:
 	$(LOCAL_BIN)/goose $(opts) -dir $(MIGRATIONS_DIR) postgres "$(POSTGRES_DSN)" down
+migration-one:
+	$(LOCAL_BIN)/goose $(opts) -allow-missing -dir $(MIGRATIONS_DIR) postgres "$(POSTGRES_DSN)" up-by-one
 migration-status:
 	$(LOCAL_BIN)/goose $(opts) -dir $(MIGRATIONS_DIR) postgres "$(POSTGRES_DSN)" status
 
