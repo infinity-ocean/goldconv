@@ -3,7 +3,7 @@
 CREATE TABLE coins (
     id SERIAL PRIMARY KEY,
     balance INT,
-    userFK INT REFERENCES users (id)
+    userFK INT UNIQUE REFERENCES users (id)
 );
 INSERT INTO coins (id, balance, userFK) VALUES 
 (1, 583279, 1),

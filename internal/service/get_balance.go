@@ -10,8 +10,7 @@ import (
 func (s *service) GetBalance(id int) (model.Balance, error) {
 	b, err := s.repo.SelectBalance(id)
 	if err != nil {
-		fmt.Println("Repo returned error:", err)
-		return b, err
+		return b, fmt.Errorf("service: selectBalance returned error: %w", err)
 	}
 	return b, nil
 }

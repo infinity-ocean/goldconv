@@ -10,7 +10,8 @@ type service struct {
 }
 
 type repo interface {
-	SelectBalance(id int) (model.Balance, error)
+	SelectBalance(int) (model.Balance, error)
+	InsertBalance(int, model.Balance) error
 }
 
 func NewService(repo repo) *service {

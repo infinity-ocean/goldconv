@@ -8,7 +8,7 @@ type ApiError struct {
 	Error string
 }
 
-func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc {
+func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc { 	// TODO JWT, user creation
 	return func(w http.ResponseWriter, r *http.Request){
 		if err := f(w, r); err != nil {
 			WriteJSONtoHTTP(w, http.StatusBadRequest, ApiError{Error: err.Error()})

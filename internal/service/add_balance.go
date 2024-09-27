@@ -1,7 +1,15 @@
 package service
 
-import "github.com/infinity-ocean/goldconv/internal/model"
+import (
+	"fmt"
 
-func (s *service) AddBalance(id int, sum model.Balance) error{
+	"github.com/infinity-ocean/goldconv/internal/model"
+)
+
+func (s *service) AddBalance(id int, balance model.Balance) error{
+	err := s.repo.InsertBalance(id, balance)
+	if err != nil {
+		return fmt.Errorf("service: insertBalance returned error: %w", err)
+	}
 	return nil
 }
