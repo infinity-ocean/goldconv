@@ -24,11 +24,16 @@ func NewController(svc service, port string) *controller {
 	return &controller{service: svc, listenPort: port}
 }
 
-func WriteJSONtoHTTP(w http.ResponseWriter, status int, v any) error { // вроде разобался
-	w.Header().Set("Content-Type", "application/json")
-	return json.NewEncoder(w).Encode(v)
+func (c *controller) Run() {
+	router := mux.NewRouter()
+	router.HandleFunc("/goldconv/balance", withJWTAuth(makeHTTPHandleFunc(c.handleBalance)))
+	router.HandleFunc("/goldconv/balance/{id}", withJWTAuth(makeHTTPHandleFunc(c.handleBalance)))
+	fmt.Println("Starting server on ", c.listenPort)
+	if err := http.ListenAndServe(c.listenPort, router); err != nil {
+		fmt.Printf("Server failed: %v\n", err)
+	}
 }
-
+			
 func (c *controller) handleBalance(w http.ResponseWriter, r *http.Request) error {
 	if r.Method == "POST" {
 		return c.AddBalance(w, r)
@@ -42,12 +47,7 @@ func (c *controller) handleBalance(w http.ResponseWriter, r *http.Request) error
 	return nil
 }
 
-func (c *controller) Run() {
-	router := mux.NewRouter()
-	router.HandleFunc("/goldconv/balance", makeHTTPHandleFunc(c.handleBalance))
-	router.HandleFunc("/goldconv/balance/{id}", makeHTTPHandleFunc(c.handleBalance))
-	fmt.Println("Starting server on ", c.listenPort)
-	if err := http.ListenAndServe(c.listenPort, router); err != nil {
-		fmt.Printf("Server failed: %v\n", err)
-	}
+func WriteJSONtoHTTP(w http.ResponseWriter, status int, v any) error { // вроде разобался
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(v)
 }
