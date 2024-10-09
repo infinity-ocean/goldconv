@@ -16,6 +16,6 @@ package controller
 type accountRequest struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
-	Password string `json:"-"`
+	Password string `json:"password"`
 	Balance  string `json:"balance"`
 }
