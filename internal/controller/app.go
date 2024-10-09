@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
+
 	"fmt"
 
 	"net/http"
@@ -26,28 +26,11 @@ func NewController(svc service, port string) *controller {
 
 func (c *controller) Run() {
 	router := mux.NewRouter()
-	router.HandleFunc("/goldconv/balance", withJWTAuth(makeHTTPHandleFunc(c.handleBalance)))
-	router.HandleFunc("/goldconv/balance/{id}", withJWTAuth(makeHTTPHandleFunc(c.handleBalance)))
+	router.HandleFunc("/goldconv/login", makeHTTPHandleFunc(c.handleAccount)) // POST
+	router.HandleFunc("/goldconv/account", makeHTTPHandleFunc(c.handleAccount)) // POST
+	router.HandleFunc("/goldconv/account/{id}", withJWTAuth(makeHTTPHandleFunc(c.handleBalance))) // GET
 	fmt.Println("Starting server on ", c.listenPort)
 	if err := http.ListenAndServe(c.listenPort, router); err != nil {
 		fmt.Printf("Server failed: %v\n", err)
 	}
-}
-			
-func (c *controller) handleBalance(w http.ResponseWriter, r *http.Request) error {
-	if r.Method == "POST" {
-		return c.AddBalance(w, r)
-	}
-	if r.Method == "GET" {
-		return c.ShowBalance(w, r)
-	}
-	if r.Method == "DELETE" {
-		return nil
-	}
-	return nil
-}
-
-func WriteJSONtoHTTP(w http.ResponseWriter, status int, v any) error { // вроде разобался
-	w.Header().Set("Content-Type", "application/json")
-	return json.NewEncoder(w).Encode(v)
 }

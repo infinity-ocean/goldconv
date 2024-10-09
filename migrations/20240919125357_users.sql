@@ -3,6 +3,8 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR
+    email VARCHAR,
+    password VARCHAR
 );
 INSERT INTO users (id, name) VALUES 
 (1, 'Grimes'),
