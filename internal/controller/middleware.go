@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"net/http"
 )
 
@@ -18,8 +19,13 @@ func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc { 	// TODO JWT, user creatio
 	}
 }
 
-func withJWTAuth(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		handler(w, r)
-	}
+// func withJWTAuth(handler http.HandlerFunc) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		handler(w, r)
+// 	}
+// }
+
+func WriteJSONtoHTTP(w http.ResponseWriter, status int, v any) error {
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(v)
 }
