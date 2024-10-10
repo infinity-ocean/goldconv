@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"github.com/gorilla/mux"
 	"github.com/infinity-ocean/goldconv/internal/model"
 )
@@ -16,7 +17,8 @@ type controller struct {
 
 type service interface {
 	AddAccount(model.AccountSmall) error
-	Login(model.AccountLogin) (string, error)
+	Login(model.AccountLogin) (string, int, error)
+	GetAccount(int) (model.Account, error)
 }
 
 func NewController(svc service, port string) *controller {
@@ -26,8 +28,8 @@ func NewController(svc service, port string) *controller {
 func (c *controller) Run() {
 	router := mux.NewRouter()
 	router.HandleFunc("/goldconv/account", makeHTTPHandleFunc(c.handleAccount)) // POST [Make account]
-	router.HandleFunc("/goldconv/login", makeHTTPHandleFunc(c.handleLogin)) // POST [Send JWT]
-	//TODO router.HandleFunc("/goldconv/account/{id}", withJWTAuth(makeHTTPHandleFunc(c.handleAccountWithID))) // GET [Get account]
+	router.HandleFunc("/goldconv/login", makeHTTPHandleFunc(c.handleLogin)) // POST [Send JWT] 
+	router.HandleFunc("/goldconv/account/{id}", makeHTTPHandleFunc(c.handleAccountWithID)) // TODO GET [Get account] With JWT auth
 	fmt.Println("Starting server on ", c.listenPort)
 	if err := http.ListenAndServe(c.listenPort, router); err != nil {
 		fmt.Printf("Server failed: %v\n", err)
@@ -56,7 +58,7 @@ func (c *controller) handleAccount(w http.ResponseWriter, r *http.Request) error
 		return err
 	}
 	return WriteJSONtoHTTP(w, http.StatusOK, acc)
-	}
+}
 
 func (c *controller) handleLogin(w http.ResponseWriter, r *http.Request) error {
 	if r.Method != "POST" {
@@ -73,16 +75,37 @@ func (c *controller) handleLogin(w http.ResponseWriter, r *http.Request) error {
 		Username: req.Username,
 		Password: req.Password,
 	}
-	jwt, err := c.service.Login(acc)
+	jwt, id, err := c.service.Login(acc)
 	if err != nil {
-		http.Error(w, "invalid username or password", http.StatusUnauthorized)
 		return err
 	} 
-	return WriteJSONtoHTTP(w, http.StatusOK, jwt) // PAY ATTENTION, MAY BE ERROR
+	answer := make(map[string]string)
+	answer["jwt"] = jwt
+	answer["id"] = strconv.Itoa(id)
+	return WriteJSONtoHTTP(w, http.StatusOK, answer)
 }
 
+func (c *controller) handleAccountWithID(w http.ResponseWriter, r *http.Request) error {
+	id, err := getID(r)
+	if err != nil {
+		return err
+	}
+	account, err := c.service.GetAccount(id)
+	if err != nil {
+		return err
+	}
+	err = WriteJSONtoHTTP(w, http.StatusOK, account) // PAY ATTENTION, MAY BE ERROR
+	if err != nil {
+		return fmt.Errorf("failed to write account into http: %v", err)
+	}
+	return nil
+}
 
-// 	func toID(r *http.Request) (int, error) {
-// 		id := mux.Vars(r)["id"]
-// 		return strconv.Atoi(id)
-// }
+func getID(r *http.Request) (int, error) {
+	idStr := mux.Vars(r)["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return id, fmt.Errorf("invalid id given %s", idStr)
+	}
+	return id, nil
+}

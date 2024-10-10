@@ -13,9 +13,9 @@ type Account struct {
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
-	Number    int64     `json:"number"`
+	Number    int     `json:"number"`
 	CreatedAt time.Time `json:"createdAt"`
-	Balance   int64     `json:"balance"`
+	Balance   int     `json:"balance"`
 }
 
 type AccountSmall struct {
