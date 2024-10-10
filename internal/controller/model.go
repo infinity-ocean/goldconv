@@ -19,3 +19,8 @@ type accountRequest struct {
 	Password string `json:"password"`
 	Balance  string `json:"balance"`
 }
+
+type AccountLogin struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
