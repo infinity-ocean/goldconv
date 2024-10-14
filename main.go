@@ -19,5 +19,5 @@ func main() {
 	svc := service.NewService(repo)
 	ctrl := controller.NewController(svc, ":9090")
 
-	ctrl.Run()
+	ctrl.Run(repo)
 }

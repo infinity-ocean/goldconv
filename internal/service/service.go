@@ -9,8 +9,6 @@ type service struct {
 }
 
 type repo interface {
-	SelectBalance(int) (model.Balance, error)
-	InsertBalance(int, model.Balance) error
 	InsertAccount(model.AccountSmall) error
 	Login(model.AccountLogin) (string, int, error)
 	SelectAccount(int) (model.Account, error)
