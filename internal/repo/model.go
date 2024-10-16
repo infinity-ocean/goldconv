@@ -6,10 +6,6 @@ import (
 	"github.com/infinity-ocean/goldconv/internal/model"
 )
 
-type coins struct {
-	balance uint `db:"balance"`
-}
-
 type accountLogin struct {
 	id       int    `db:"id"`
 	username string `db:"username"`
@@ -21,9 +17,9 @@ type account struct {
 	Username  string    `db:"username"`
 	Email     string    `db:"email"`
 	Password  string    `db:"password"`
-	Number    int     `db:"number"`
+	Number    int       `db:"number"`
 	CreatedAt time.Time `db:"createdAt"`
-	Balance   int     `db:"balance"`
+	Balance   int       `db:"balance"`
 }
 
 func (a account) toAccount() model.Account {

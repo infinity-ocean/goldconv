@@ -3,24 +3,24 @@ package repo
 import (
 	"context"
 	"fmt"
-	"os"
+	"github.com/infinity-ocean/goldconv/internal/config"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
 
-func MakePool() (*pgxpool.Pool, error) {
-	// const DB = "postgres://postgres:12345@localhost:5432/postgres"
+func MakePool(config config.Config) (*pgxpool.Pool, error) {
 	err := godotenv.Load("infra.env")
 	if err != nil {
 		return &pgxpool.Pool{}, fmt.Errorf("failed to load env: %w", err)
 	}
+	// const DB = "postgres://postgres:12345@localhost:5432/postgres"
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
-		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSTGRES_PORT"),
-		os.Getenv("POSTGRES_DB"),
-		os.Getenv("POSTGRES_SSL"),
+		config.PGUSER,
+		config.PGPASSWORD,
+		config.PGHost,
+		config.PGPORT,
+		config.PGDB,
+		config.PGSSL,
 	)
 
 	// Create the connection pool

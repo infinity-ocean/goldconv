@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/infinity-ocean/goldconv/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"

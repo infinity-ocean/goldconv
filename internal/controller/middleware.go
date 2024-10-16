@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/infinity-ocean/goldconv/internal/config"
 	"github.com/infinity-ocean/goldconv/internal/model"
 )
 
@@ -32,9 +32,9 @@ func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc { 	//
 	}
 }
 
-func withJWTAuth(handler http.HandlerFunc, repo repo) http.HandlerFunc {
+func withJWTAuth(handler http.HandlerFunc, repo repo, conf config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		secret := os.Getenv("JWT_SECRET")
+		secret := conf.JWTSecret
 		tokenString := r.Header.Get("Authorization")
 		if !strings.HasPrefix(tokenString, "Bearer ") {
 			w.WriteHeader(http.StatusForbidden)
@@ -45,7 +45,7 @@ func withJWTAuth(handler http.HandlerFunc, repo repo) http.HandlerFunc {
 		token, err := jwt.Parse(tokenTrim, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-			}
+			} 
 			return []byte(secret), nil
 		}) 
 
@@ -69,7 +69,7 @@ func withJWTAuth(handler http.HandlerFunc, repo repo) http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("pg didn't return account"))
 		}
-		claims := token.Claims.(jwt.MapClaims)
+		claims := token.Claims.(jwt.MapClaims) // type assertion, проверять ok
 		if account.ID != int(claims["accountID"].(float64)) { // ?
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("id from db and id in token aren't match"))
