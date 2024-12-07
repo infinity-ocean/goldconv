@@ -19,8 +19,9 @@ func main() {
 		return
 	}
 	//TODO вынести run в main
-	//TODO сделать доступ к env исключительно через конфиг
 	//TODO перенести логику jwt в service
+	//TODO pgxscan
+	//TODO сделать gRPC
 
 	repo := repo.NewRepo(pool)
 	svc := service.NewService(repo)
