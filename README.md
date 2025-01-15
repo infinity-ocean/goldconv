@@ -1,0 +1,1 @@
+A project written in go, implementing the financial mechanism from ArcheAge. The mechanism converts gold to silver, from silver to bronze. Three-layer architecture, RESTful approach was used and JWT authorization was added.
